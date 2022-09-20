@@ -1,12 +1,16 @@
 package evm
 
+import (
+	"errors"
+)
+
 type CoinInfo struct {
 	Name string
 	ChainName string
 	Address string
 }
 
-var coniMap map[string]CoinInfo = map[string]CoinInfo{
+var coinMap map[string]CoinInfo = map[string]CoinInfo{
 	"BNB": {
 		Name: "BNB",
 		ChainName: "Binance Smart Chain",
@@ -27,4 +31,13 @@ var coniMap map[string]CoinInfo = map[string]CoinInfo{
 		ChainName: "Binance Smart Chain",
 		Address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
 	},
+}
+
+func GetCoinInfo(name string) (*CoinInfo, error) {
+	val, ok := coinMap[name]
+	if ok {
+		return &val, nil
+	} else {
+		return nil, errors.New(name + ": undefined")
+	}
 }

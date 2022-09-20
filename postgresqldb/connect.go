@@ -33,6 +33,16 @@ func InitDB() {
 		registerChain("bsctestnet")
 	}
 
+	{ // coni table
+		query := fmt.Sprintf("create table if not exists coin_table (name text not null primary key, chainname text not null, address text not null);")
+		DbQuery(query)
+
+		registerCoin("BNB")
+		registerCoin("BUSD")
+		registerCoin("USDT")
+		registerCoin("USDC")
+	}
+
 	fmt.Println("PostgreSQL successfully connected!")
 }
 
@@ -53,5 +63,25 @@ func registerChain(name string) {
 			query = fmt.Sprintf("update evm_chain_table set nativecurrency = '%s', rpcurl = '%s', chainid=%d, blockexplorer = '%s' where name='%s';", bscInfo.NativeCurrency, bscInfo.RpcURL, bscInfo.ChainId, bscInfo.BlockExplorer, bscInfo.Name)
 			DbQuery(query)
 		}
+	} else {
+		fmt.Printf("Error" + err.Error())
+	}
+}
+
+func registerCoin(name string) {
+	coinInfo, err := evm.GetCoinInfo(name)
+	if err == nil {
+		query := fmt.Sprintf("select * from coin_table where name='%s';", coinInfo.Name)
+		retCoins := DbQuery(query)
+
+		if len(retCoins) == 0 {
+			query = fmt.Sprintf("insert into coin_table(name, chainname, address) values('%s', '%s', '%s');", coinInfo.Name, coinInfo.ChainName, coinInfo.Address)
+			DbQuery(query)
+		} else {
+			query = fmt.Sprintf("update coin_table set name='%s', chainname='%s', address='%s';", coinInfo.Name, coinInfo.ChainName, coinInfo.Address)
+			DbQuery(query)
+		}
+	} else {
+		fmt.Printf("Error" + err.Error())
 	}
 }
