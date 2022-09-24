@@ -89,7 +89,10 @@ func writePostJsonRequest(w http.ResponseWriter, req *http.Request) {
 			}
 		}
 
-		ProcGet(req.URL.EscapedPath(), objMap[0])
+		procErr := ProcGet(req.URL.EscapedPath(), objMap[0], w)
+		if procErr != nil {
+			fmt.Println(procErr)
+		}
 
 		btArray, err := json.Marshal(objMap[0])
 		if err == nil {

@@ -78,7 +78,7 @@ func registerCoin(name string) {
 			query = fmt.Sprintf("insert into coin_table(name, chainname, address) values('%s', '%s', '%s');", coinInfo.Name, coinInfo.ChainName, coinInfo.Address)
 			DbQuery(query)
 		} else {
-			query = fmt.Sprintf("update coin_table set name='%s', chainname='%s', address='%s';", coinInfo.Name, coinInfo.ChainName, coinInfo.Address)
+			query = fmt.Sprintf("update coin_table set chainname='%s', address='%s' where name='%s';", coinInfo.ChainName, coinInfo.Address, coinInfo.Name)
 			DbQuery(query)
 		}
 	} else {
