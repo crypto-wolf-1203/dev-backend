@@ -103,7 +103,7 @@ func main() {
 					maxLoseDepth = loseDepth
 				}
 				loseDepth = 0
-				fmt.Println(idx, val, "profitting for", val, ">=", rate)
+				fmt.Println(idx, val, "********************** profitting for", val, ">=", rate)
 				profitTimes++
 			} else {
 				fmt.Println(idx, val, "missing for", val, ">=", rate)
@@ -116,5 +116,13 @@ func main() {
 		}
 	}
 
-	fmt.Println(sum, minSum, maxLoseDepth, shotTimes, profitTimes)
+	fmt.Println("")
+	fmt.Println(sum/100, "Total sum")
+	fmt.Println(minSum/100, "Lowest sum")
+	fmt.Println(maxLoseDepth, "lose depth maximum")
+	fmt.Println(shotTimes, "deduct period count")
+	fmt.Println(profitTimes, "profit period count")
 }
+
+// go run sim.go 20 8 2100 // not good, proved being bad
+// go run sim.go 50 40 10100 // good, proving...
