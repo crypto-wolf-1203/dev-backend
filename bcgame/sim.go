@@ -182,6 +182,7 @@ func doubleMethod(gap, maxKeep int, v []int) {
 	keep := 0
 	mode := 2 // 0 :skipping, 1: deducting, 2: ignoring
 	failCount := 0
+	profitCount := 0
 	minSum := 10000000
 
 	for idx, val := range v {
@@ -190,6 +191,7 @@ func doubleMethod(gap, maxKeep int, v []int) {
 		if betThisTime && val >= 100 {
 			sum += amount * 2
 			fmt.Print(" *** profitting *** ")
+			profitCount++
 		}
 
 		nextMode := 0
@@ -216,6 +218,10 @@ func doubleMethod(gap, maxKeep int, v []int) {
 				nextMode = 2
 				if betThisTime && val < 100 {
 					failCount++
+				}
+
+				if val >= 100 {
+					nextMode = 0
 				}
 			}
 		case 2:
@@ -260,7 +266,7 @@ func doubleMethod(gap, maxKeep int, v []int) {
 			minSum = sum
 		}
 
-		fmt.Printf("mode %d, next mode %d, bet %v, amount %v, sum %d, worst %d, fail %d\n", mode, nextMode, betThisTime, amount, sum, minSum, failCount)
+		fmt.Printf("mode %d, next mode %d, bet %v, amount %v, sum %d, worst %d, fail %d, profit %d\n", mode, nextMode, betThisTime, amount, sum, minSum, failCount, profitCount)
 
 		mode = nextMode
 	}
