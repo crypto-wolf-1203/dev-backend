@@ -184,14 +184,30 @@ func doubleMethod(gap, maxKeep int, v []int) {
 	failCount := 0
 	profitCount := 0
 	minSum := 10000000
+	deductCount := 0
+	minRound := 100000
+	minRoundIdx := -1
+	maxRound := 0
+	maxRoundIdx := -1
+
+	roundCount := 0
+	avgRound := 0
+
+	intervalIdx := make([]int, 0)
+	intervalLength := make([]int, 0)
+
+	dominanceLimit := 64
 
 	for idx, val := range v {
 		fmt.Printf("[%v, %v] ", idx, val)
 
 		if betThisTime && val >= 100 {
-			sum += amount * 2
-			fmt.Print(" *** profitting *** ")
+			if profitCount+deductCount < dominanceLimit {
+				sum += amount * 2
+				fmt.Print(" *** profitting *** ")
+			}
 			profitCount++
+			deductCount--
 		}
 
 		nextMode := 0
@@ -217,7 +233,24 @@ func doubleMethod(gap, maxKeep int, v []int) {
 			} else {
 				nextMode = 2
 				if betThisTime && val < 100 {
-					failCount++
+					if profitCount+deductCount < dominanceLimit {
+						failCount++
+					}
+					if profitCount+deductCount < minRound {
+						minRound = profitCount + deductCount
+						minRoundIdx = idx
+					}
+
+					if profitCount+deductCount > maxRound {
+						maxRound = profitCount + deductCount
+						maxRoundIdx = idx
+					}
+
+					intervalIdx = append(intervalIdx, idx)
+					intervalLength = append(intervalLength, profitCount+deductCount)
+
+					roundCount++
+					avgRound += deductCount + profitCount
 				}
 
 				if val >= 100 {
@@ -255,19 +288,33 @@ func doubleMethod(gap, maxKeep int, v []int) {
 				amount *= 2
 			}
 		case 2:
-			fmt.Print(" --- failing --- ")
+			fmt.Printf(" --- failing --- deduct %d, profit %d, ", deductCount, profitCount)
+			deductCount = 0
+			profitCount = 0
 		}
 
 		if betThisTime {
-			sum -= amount
+			if profitCount+deductCount < dominanceLimit {
+				sum -= amount
+			}
+			deductCount++
 		}
 
 		if sum < minSum {
 			minSum = sum
 		}
 
-		fmt.Printf("mode %d, next mode %d, bet %v, amount %v, sum %d, worst %d, fail %d, profit %d\n", mode, nextMode, betThisTime, amount, sum, minSum, failCount, profitCount)
+		avg := 0
+		if roundCount > 0 {
+			avg = avgRound / roundCount
+		}
+		fmt.Printf("mode %d, next mode %d, bet %v, amount %v, sum %d, worst %d, fail %d, profit %d, deduct %d, min round %d (index %d), max round %d (index %d), avg round %d\n", mode, nextMode, betThisTime, amount, sum, minSum, failCount, profitCount, deductCount, minRound, minRoundIdx, maxRound, maxRoundIdx, avg)
 
 		mode = nextMode
+	}
+
+	fmt.Println("interval list:")
+	for idx, val := range intervalIdx {
+		fmt.Printf("%d, %d\n", val, intervalLength[idx])
 	}
 }

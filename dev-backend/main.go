@@ -19,24 +19,23 @@ type RequestRecordType struct {
 }
 
 func writePostJsonRequest(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "write request accepted")
-	fmt.Println("Method", req.Method)
-	fmt.Println("URL", req.URL.String())
-	fmt.Println("Proto", req.Proto)
-	fmt.Println("ProtoMajor", req.ProtoMajor)
-	fmt.Println("ProtoMinor", req.ProtoMinor)
-	fmt.Println("Header")
+	// fmt.Println("Method", req.Method)
+	// fmt.Println("URL", req.URL.String())
+	// fmt.Println("Proto", req.Proto)
+	// fmt.Println("ProtoMajor", req.ProtoMajor)
+	// fmt.Println("ProtoMinor", req.ProtoMinor)
+	// fmt.Println("Header")
 	var clientIp string;
 	for k, v := range req.Header {
-		fmt.Println("\t", k)
+		// fmt.Println("\t", k)
 		for _, vv := range v {
-			fmt.Println("\t\t", vv)
+			// fmt.Println("\t\t", vv)
 			if k == "X-Real-Ip" {
 				clientIp = vv;
 			}
 		}
 	}
-	fmt.Println("Body", req.Body)
+	// fmt.Println("Body", req.Body)
 
 	var content string
 	if req.Method == "POST" {
@@ -77,16 +76,16 @@ func writePostJsonRequest(w http.ResponseWriter, req *http.Request) {
 		// response: {"p[]":["q","r","s"]}
 
 		query := req.URL.Query()
-		fmt.Println("\tHost", req.URL.EscapedPath())
+		// fmt.Println("\tHost", req.URL.EscapedPath())
 		var objMap []map[string]interface{} = make([]map[string]interface{}, 1)
 		objMap[0] = make(map[string]interface{})
 
 		for k, v := range query {
 			objMap[0][k] = v
-			fmt.Println("\t", k, ":", v)
-			for idx, val := range v {
-				fmt.Println("\t\t", idx, val)
-			}
+			// fmt.Println("\t", k, ":", v)
+			// for idx, val := range v {
+				// fmt.Println("\t\t", idx, val)
+			// }
 		}
 
 		procErr := ProcGet(req.URL.EscapedPath(), objMap[0], w)
@@ -96,7 +95,7 @@ func writePostJsonRequest(w http.ResponseWriter, req *http.Request) {
 
 		btArray, err := json.Marshal(objMap[0])
 		if err == nil {
-			fmt.Fprintf(w, "Post DB Write: %+v", string(btArray))
+			// fmt.Fprintf(w, "Post DB Write: %+v", string(btArray))
 			content = string(btArray)
 
 			// var uncomp []map[string]interface{}
@@ -109,27 +108,27 @@ func writePostJsonRequest(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	fmt.Println("ContentLength", req.ContentLength)
-	fmt.Println("TransferEncoding")
-	for _, v := range req.TransferEncoding {
-		fmt.Println("\t", v)
-	}
-	fmt.Println("Close", req.Close)
-	fmt.Println("Host", req.Host)
-	fmt.Println("Form", req.Form)
-	fmt.Println("PostForm", req.PostForm)
-	fmt.Println("MultipartForm", req.MultipartForm)
-	fmt.Println("Trailer")
-	for k, v := range req.Trailer {
-		fmt.Println("\t", k)
-		for _, vv := range v {
-			fmt.Println("\t\t", vv)
-		}
-	}
-	fmt.Println("RemoteAddr", req.RemoteAddr)
-	fmt.Println("RequestURI", req.RequestURI)
-	fmt.Println("TLS", req.TLS)
-	fmt.Println("Response", req.Response)
+	// fmt.Println("ContentLength", req.ContentLength)
+	// fmt.Println("TransferEncoding")
+	// for _, v := range req.TransferEncoding {
+	// 	fmt.Println("\t", v)
+	// }
+	// fmt.Println("Close", req.Close)
+	// fmt.Println("Host", req.Host)
+	// fmt.Println("Form", req.Form)
+	// fmt.Println("PostForm", req.PostForm)
+	// fmt.Println("MultipartForm", req.MultipartForm)
+	// fmt.Println("Trailer")
+	// for k, v := range req.Trailer {
+	// 	fmt.Println("\t", k)
+	// 	for _, vv := range v {
+	// 		fmt.Println("\t\t", vv)
+	// 	}
+	// }
+	// fmt.Println("RemoteAddr", req.RemoteAddr)
+	// fmt.Println("RequestURI", req.RequestURI)
+	// fmt.Println("TLS", req.TLS)
+	// fmt.Println("Response", req.Response)
 
 	writeLoginHistory(clientIp, req.Method, content)
 }
@@ -176,8 +175,9 @@ func writeRequest2(handler http.Handler) http.Handler {
 
 func writeLoginHistory(ip string, method string, content string) {
 	fmtString := fmt.Sprintf("insert into %s(ip, method, content) values($1, $2, $3)", psqldb.GetHistoryTableNable())
-	ret := psqldb.DbQuery(fmtString, ip, method, content)
-	fmt.Println(ret)
+	psqldb.DbQuery(fmtString, ip, method, content)
+	// ret := psqldb.DbQuery(fmtString, ip, method, content)
+	// fmt.Println(ret)
 }
 
 func main() {
@@ -187,5 +187,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", writePostJsonRequest)
 
+	fmt.Println("started server at port 11331")
 	http.ListenAndServe(":11331", mux)
 }

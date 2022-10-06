@@ -14,7 +14,7 @@ var coinMap map[string]CoinInfo = map[string]CoinInfo{
 	"BNB": {
 		Name: "BNB",
 		ChainName: "Binance Smart Chain",
-		Address: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+		Address: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
 	},
 	"BUSD": {
 		Name: "BUSD",
